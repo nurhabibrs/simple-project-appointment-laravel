@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('appoint_for')->nullable()->comment('Janji untuk');
             $table->dateTime('appointment_date')->nullable()->comment('Tanggal janji');
             $table->foreignIdFor(\App\Models\User::class, 'created_by');
+            $table->string('status')->nullable()->comment('Status');
             $table->timestamps();
             $table->softDeletes();
         });

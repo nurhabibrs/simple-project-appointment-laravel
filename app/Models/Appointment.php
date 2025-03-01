@@ -22,6 +22,7 @@ class Appointment extends Model
     {
         static::creating(function ($model) {
             $model->created_by = \Auth::user()->id;
+            $model->status = 'pending';
         });
 
         static::created(function (Appointment $model) {

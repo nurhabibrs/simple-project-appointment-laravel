@@ -7,6 +7,7 @@ use App\Filament\Resources\AppointmentResource\Pages;
 use App\Models\Appointment;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -94,15 +95,50 @@ class AppointmentResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('appointment_date')
                     ->label('Tanggal Janji Temu')
-                    ->dateTime('d M Y H:i:s')
-                    ->searchable(),
+                    ->dateTime('d M Y H:i:s'),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Dibuat oleh')
+                    ->visible(fn () => \Auth::user()->role == 'Admin'),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn ($record) => $record->status == 'pending' ? 'warning' : 'success')
+                    ->formatStateUsing(fn ($record) => $record->status == 'pending' ? 'Menunggu Persetujuan' : 'Disetujui'),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('approve')
+                        ->label('Approve')
+                        ->visible(fn ($record) => \Auth::user()->role == 'Admin' && $record->status == 'pending')
+                        ->icon('heroicon-o-check')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('Apakah anda yakin ingin menyetujui janji temu ini?')
+                        ->modalDescription('')
+                        ->action(function ($record) {
+                           \DB::beginTransaction();
+                           try {
+                               $record->update([
+                                   'status' =>  'approved',
+                               ]);
+
+                               \DB::commit();
+                           } catch (\Throwable $e) {
+                               \DB::rollBack();
+
+                               Notification::make()
+                                   ->danger()
+                                   ->body('Terjadi kegagalan dalam approve');
+                           }
+                        }),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make()
+                        ->visible(fn ($record) => $record->created_by == \Auth::user()->id && $record->status == 'pending'),
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -132,10 +168,11 @@ class AppointmentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
+        $query = parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+        return \Auth::user()->role == 'Admin' ? $query : $query->where('created_by', \Auth::user()->id);
     }
 
     public static function filamentOption($data): Collection

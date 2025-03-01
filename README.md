@@ -26,7 +26,7 @@ composer install
 npm install
 ```
 
-- Run the migration and seeder using this command
+- Run the migration and seeder using this command (It will create admin with email: admin@mail.com and password: password)
 
 ```bash
 php artisan migrate --seed

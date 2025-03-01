@@ -23,6 +23,7 @@ class Appointment extends Model
         static::created(function (Appointment $model) {
             $model->code = 'JT'.now()->format('YmdHis');
             $model->full_name = $model->first_name.' '.$model->last_name;
+            $model->save();
         });
     }
 }

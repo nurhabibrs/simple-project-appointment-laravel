@@ -12,6 +12,11 @@
 
 - Copy `env.example` and rename this to `.env`.
 
+- Run command
+```bash
+php artisan key:generate
+```
+
 - Change part `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` based on your database.
 
 - Run command

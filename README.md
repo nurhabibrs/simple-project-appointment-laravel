@@ -4,7 +4,7 @@
 - Node ^18.0
 - NPM ^10
 - Laravel ^10.0
-- Local server (Laravel Herd, XAMPP, or etc.)
+- Local server (Laravel Herd, XAMPP, or etc.) `in here i use nginx version 1.24`
 
 ## Installations
 

@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\AppointmentEnum;
 use App\Filament\Resources\AppointmentResource\Pages;
-use App\Filament\Resources\AppointmentResource\RelationManagers;
 use App\Models\Appointment;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -12,7 +12,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Ysfkaya\FilamentPhoneInput\PhoneInput;
+use Illuminate\Support\Collection;
+use Spatie\LaravelOptions\Options;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 
 class AppointmentResource extends Resource
@@ -33,7 +35,7 @@ class AppointmentResource extends Resource
             ->schema([
                 Forms\Components\Fieldset::make()
                     ->schema([
-                        Forms\Components\TextInput::make('firt_name')
+                        Forms\Components\TextInput::make('first_name')
                             ->label('Nama Depan')
                             ->required(),
                         Forms\Components\TextInput::make('last_name')
@@ -52,18 +54,28 @@ class AppointmentResource extends Resource
                             ->label('Jenis Kelamin')
                             ->options([1 => 'Pria', 0 => 'Wanita'])
                             ->required(),
-                        Forms\Components\TextInput::make('address')
-                            ->label('Alamat')
-                            ->required(),
                         Forms\Components\TextInput::make('email')
                             ->email()
                             ->default(\Auth::user()->email)
                             ->required(),
-                        \Ysfkaya\FilamentPhoneInput\Forms\PhoneInput::make('phone')
+                        PhoneInput::make('phone')
                             ->label('No Ponsel')
                             ->initialCountry('id')
                             ->displayNumberFormat(PhoneInputNumberType::E164)
                             ->required(),
+                        Forms\Components\Textarea::make('address')
+                            ->label('Alamat')
+                            ->columnSpanFull()
+                            ->required(),
+                        Forms\Components\Select::make('appoint_for')
+                            ->label('Janji Temu Untuk')
+                            ->options(self::filamentOption(Options::forEnum(AppointmentEnum::class)))
+                            ->required(),
+                        Forms\Components\DatePicker::make('appointment_date')
+                            ->label('Tanggal Janji Temu')
+                            ->minDate(now()->startOfDay())
+                            ->required()
+                            ->displayFormat('d M Y'),
                     ]),
 
             ]);
@@ -73,7 +85,12 @@ class AppointmentResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('code')
+                    ->label('Kode')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('full_name')
+                    ->label('Nama Lengkap')
                     ->searchable()
                     ->sortable(),
             ])
@@ -116,5 +133,12 @@ class AppointmentResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+
+    public static function filamentOption($data): Collection
+    {
+        return collect($data)->mapWithKeys(function ($item) {
+            return [$item['value'] => $item['label']];
+        });
     }
 }

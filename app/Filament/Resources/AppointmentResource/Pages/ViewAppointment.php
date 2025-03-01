@@ -12,6 +12,8 @@ class ViewAppointment extends ViewRecord
 
     protected static ?string $breadcrumb = 'Lihat';
 
+    protected static ?string $title = 'Lihat Janji Temu';
+
     protected function getHeaderActions(): array
     {
         return [

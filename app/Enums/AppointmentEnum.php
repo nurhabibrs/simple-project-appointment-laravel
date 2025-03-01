@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum AppointmentOptions:string
+enum AppointmentEnum:string
 {
     case MedicalExamination = 'Medical Checkup';
     case DoctorCheck = 'Cek Dokter';

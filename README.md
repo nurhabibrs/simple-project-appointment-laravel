@@ -13,6 +13,7 @@
 - Copy `env.example` and rename this to `.env`.
 
 - Run command
+
 ```bash
 php artisan key:generate
 ```
@@ -37,3 +38,9 @@ npm install
 php artisan migrate --seed
 ```
 - Run `php artisan serve` (or based on your local serve) and run `npm run dev`
+
+## Running Test
+
+```bash
+php artisan test
+```

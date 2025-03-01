@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('address')->nullable()->comment('Alamat');
             $table->string('email')->nullable()->comment('Email');
             $table->string('appoint_for')->nullable()->comment('Janji untuk');
-            $table->date('appointment_date')->nullable()->comment('Tanggal janji');
+            $table->dateTime('appointment_date')->nullable()->comment('Tanggal janji');
             $table->timestamps();
             $table->softDeletes();
         });

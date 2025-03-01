@@ -15,7 +15,7 @@ class Appointment extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'appoint_for' => AppointmentEnum::class,
+        'appointment_date' => 'datetime',
     ];
 
     protected static function booted()

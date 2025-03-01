@@ -71,11 +71,10 @@ class AppointmentResource extends Resource
                             ->label('Janji Temu Untuk')
                             ->options(self::filamentOption(Options::forEnum(AppointmentEnum::class)))
                             ->required(),
-                        Forms\Components\DatePicker::make('appointment_date')
-                            ->label('Tanggal Janji Temu')
+                        Forms\Components\DateTimePicker::make('appointment_date')
+                            ->label('Tanggal dan Jam Janji Temu')
                             ->minDate(now()->startOfDay())
-                            ->required()
-                            ->displayFormat('d M Y'),
+                            ->required(),
                     ]),
 
             ]);
@@ -93,6 +92,10 @@ class AppointmentResource extends Resource
                     ->label('Nama Lengkap')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('appointment_date')
+                    ->label('Tanggal Janji Temu')
+                    ->dateTime('d M Y H:i:s')
+                    ->searchable(),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
@@ -138,7 +141,7 @@ class AppointmentResource extends Resource
     public static function filamentOption($data): Collection
     {
         return collect($data)->mapWithKeys(function ($item) {
-            return [$item['value'] => $item['label']];
+            return [$item['label'] => $item['value']];
         });
     }
 }

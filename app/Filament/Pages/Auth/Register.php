@@ -31,15 +31,8 @@ class Register extends BaseRegister
     protected function getRoleFormComponent(): Component
     {
         return Select::make('role')
-            ->options($this->filamentOption(Options::forEnum(RoleEnum::class)))
+            ->options(filamentOption(Options::forEnum(RoleEnum::class)))
             ->default(RoleEnum::User->name)
             ->required();
-    }
-
-    protected function filamentOption($data): Collection
-    {
-        return collect($data)->mapWithKeys(function ($item) {
-            return [$item['value'] => $item['label']];
-        });
     }
 }

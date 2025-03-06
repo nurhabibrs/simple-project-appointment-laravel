@@ -70,7 +70,7 @@ class AppointmentResource extends Resource
                             ->required(),
                         Forms\Components\Select::make('appoint_for')
                             ->label('Janji Temu Untuk')
-                            ->options(self::filamentOption(Options::forEnum(AppointmentEnum::class)))
+                            ->options(\filamentOption(Options::forEnum(AppointmentEnum::class)))
                             ->required(),
                         Forms\Components\DateTimePicker::make('appointment_date')
                             ->label('Tanggal dan Jam Janji Temu')
@@ -173,12 +173,5 @@ class AppointmentResource extends Resource
                 SoftDeletingScope::class,
             ]);
         return \Auth::user()->role == 'Admin' ? $query : $query->where('created_by', \Auth::user()->id);
-    }
-
-    public static function filamentOption($data): Collection
-    {
-        return collect($data)->mapWithKeys(function ($item) {
-            return [$item['label'] => $item['value']];
-        });
     }
 }
